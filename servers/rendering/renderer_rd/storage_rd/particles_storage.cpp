@@ -849,6 +849,7 @@ void ParticlesStorage::_particles_process(Particles *p_particles, double p_delta
 			to_particles = p_particles->emission_transform.affine_inverse();
 		}
 
+		// cosparks TODO: update this logic to allow for multiple types of GPU colliders
 		if (p_particles->has_sdf_collision && RD::get_singleton()->texture_is_valid(p_particles->sdf_collision_texture)) {
 			//2D collision
 
@@ -917,7 +918,7 @@ void ParticlesStorage::_particles_process(Particles *p_particles, double p_delta
 			Vector3 scale = to_collider.basis.get_scale();
 			to_collider.basis.orthonormalize();
 
-			if (pc->type <= RS::PARTICLES_COLLISION_TYPE_VECTOR_FIELD_ATTRACT) {
+			if (pc->type <= RS::PARTICLES_COLLISION_TYPE_SDF_ATTRACT_2D) {
 				//attractor
 				if (frame_params.attractor_count >= ParticlesFrameParams::MAX_ATTRACTORS) {
 					continue;
@@ -960,6 +961,15 @@ void ParticlesStorage::_particles_process(Particles *p_particles, double p_delta
 						collision_3d_textures[collision_3d_textures_used] = pc->field_texture;
 						collision_3d_textures_used++;
 					} break;
+					case RS::PARTICLES_COLLISION_TYPE_CIRCLE_ATTRACT:
+						// cosparks TODO: implement
+						break;
+					case RS::PARTICLES_COLLISION_TYPE_RECT_ATTRACT:
+						// cosparks TODO: implement
+						break;
+					case RS::PARTICLES_COLLISION_TYPE_SDF_ATTRACT_2D:
+						// cosparks TODO: implement
+						break;
 					default: {
 					}
 				}
