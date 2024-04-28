@@ -168,6 +168,7 @@
 #include "scene/2d/canvas_modulate.h"
 #include "scene/2d/cpu_particles_2d.h"
 #include "scene/2d/gpu_particles_2d.h"
+#include "scene/2d/gpu_particles_collision_2d.h"
 #include "scene/2d/light_2d.h"
 #include "scene/2d/light_occluder_2d.h"
 #include "scene/2d/line_2d.h"
@@ -778,6 +779,12 @@ void register_scene_types() {
 	GDREGISTER_CLASS(CanvasGroup);
 	GDREGISTER_CLASS(CPUParticles2D);
 	GDREGISTER_CLASS(GPUParticles2D);
+	GDREGISTER_ABSTRACT_CLASS(GPUParticlesCollision2D);
+	GDREGISTER_CLASS(GPUParticlesCollisionRect2D);
+	GDREGISTER_CLASS(GPUParticlesCollisionCircle2D);
+	GDREGISTER_ABSTRACT_CLASS(GPUParticlesAttractor2D);
+	GDREGISTER_CLASS(GPUParticlesAttractorRect2D);
+	GDREGISTER_CLASS(GPUParticlesAttractorCircle2D);
 	GDREGISTER_CLASS(Sprite2D);
 	GDREGISTER_CLASS(SpriteFrames);
 	GDREGISTER_CLASS(AnimatedSprite2D);

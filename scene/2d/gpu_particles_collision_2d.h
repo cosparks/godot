@@ -28,10 +28,9 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#ifndef GPU_PARTICLES_COLLISION_3D_H
-#define GPU_PARTICLES_COLLISION_3D_H
+#ifndef GPU_PARTICLES_COLLISION_2D_H
+#define GPU_PARTICLES_COLLISION_2D_H
 
-#include "core/templates/local_vector.h"
 #include "scene/2d/node_2d.h"
 
 class GPUParticlesCollision2D : public Node2D {
@@ -84,112 +83,6 @@ public:
 	GPUParticlesCollisionRect2D();
 	~GPUParticlesCollisionRect2D();
 };
-
-class GPUParticlesCollisionSDF2D : public GPUParticlesCollision2D {
-	GDCLASS(GPUParticlesCollisionSDF2D, GPUParticlesCollision2D);
-
-public:
-	enum Resolution {
-		RESOLUTION_16,
-		RESOLUTION_32,
-		RESOLUTION_64,
-		RESOLUTION_128,
-		RESOLUTION_256,
-		RESOLUTION_512,
-		RESOLUTION_MAX,
-	};
-
-	typedef void (*BakeBeginFunc)(int);
-	typedef void (*BakeStepFunc)(int, const String &);
-	typedef void (*BakeEndFunc)();
-
-private:
-	Vector3 size = Vector3(2, 2, 2);
-	Resolution resolution = RESOLUTION_64;
-	uint32_t bake_mask = 0xFFFFFFFF;
-	Ref<Texture3D> texture;
-	float thickness = 1.0;
-
-	struct PlotMesh {
-		Ref<Mesh> mesh;
-		Transform3D local_xform;
-	};
-
-	void _find_meshes(const AABB &p_aabb, Node *p_at_node, List<PlotMesh> &plot_meshes);
-
-	struct BVH {
-		enum {
-			LEAF_BIT = 1 << 30,
-			LEAF_MASK = LEAF_BIT - 1
-		};
-		AABB bounds;
-		uint32_t children[2] = {};
-	};
-
-	struct FacePos {
-		Vector3 center;
-		uint32_t index = 0;
-	};
-
-	struct FaceSort {
-		uint32_t axis = 0;
-		bool operator()(const FacePos &p_left, const FacePos &p_right) const {
-			return p_left.center[axis] < p_right.center[axis];
-		}
-	};
-
-	uint32_t _create_bvh(LocalVector<BVH> &bvh_tree, FacePos *p_faces, uint32_t p_face_count, const Face3 *p_triangles, float p_thickness);
-
-	struct ComputeSDFParams {
-		float *cells = nullptr;
-		Vector3i size;
-		float cell_size = 0.0;
-		Vector3 cell_offset;
-		const BVH *bvh = nullptr;
-		const Face3 *triangles = nullptr;
-		float thickness = 0.0;
-	};
-
-	void _find_closest_distance(const Vector3 &p_pos, const BVH *p_bvh, uint32_t p_bvh_cell, const Face3 *p_triangles, float p_thickness, float &r_closest_distance);
-	void _compute_sdf_z(uint32_t p_z, ComputeSDFParams *params);
-	void _compute_sdf(ComputeSDFParams *params);
-
-protected:
-	static void _bind_methods();
-
-public:
-	virtual PackedStringArray get_configuration_warnings() const override;
-
-	void set_thickness(float p_thickness);
-	float get_thickness() const;
-
-	void set_size(const Vector3 &p_size);
-	Vector3 get_size() const;
-
-	void set_resolution(Resolution p_resolution);
-	Resolution get_resolution() const;
-
-	void set_bake_mask(uint32_t p_mask);
-	uint32_t get_bake_mask() const;
-
-	void set_bake_mask_value(int p_layer_number, bool p_enable);
-	bool get_bake_mask_value(int p_layer_number) const;
-
-	void set_texture(const Ref<Texture3D> &p_texture);
-	Ref<Texture3D> get_texture() const;
-
-	Vector3i get_estimated_cell_size() const;
-	Ref<Image> bake();
-
-	static BakeBeginFunc bake_begin_function;
-	static BakeStepFunc bake_step_function;
-	static BakeEndFunc bake_end_function;
-
-	GPUParticlesCollisionSDF2D();
-	~GPUParticlesCollisionSDF2D();
-};
-
-VARIANT_ENUM_CAST(GPUParticlesCollisionSDF2D::Resolution)
 
 class GPUParticlesAttractor2D : public Node2D {
 	GDCLASS(GPUParticlesAttractor2D, Node2D);
@@ -254,4 +147,4 @@ public:
 	~GPUParticlesAttractorRect2D();
 };
 
-#endif // GPU_PARTICLES_COLLISION_3D_H
+#endif // GPU_PARTICLES_COLLISION_2D_H
